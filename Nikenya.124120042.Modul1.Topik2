@@ -1,0 +1,23 @@
+1.
+# Program menghitung luas lingkaran
+
+# Meminta input jari-jari dari pengguna
+r = 9
+# Menggunakan nilai Pi = 3.14
+pi = 3.14
+# Rumus luas lingkaran: π × r²
+luas = pi * r * r
+# Menampilkan hasil
+print("Luas lingkaran adalah:", luas) #
+
+# Program menyimpan dan menampilkan data pribadi
+
+2.
+# Membuat variabel
+nama = "Nikenya"
+umur = 19
+tinggi_badan = 1.58
+status_mahasiswa = True  # 
+
+# Menampilkan hasil dalam satu kalimat informatif
+print("Nama saya", nama, ", umur saya", umur, "tahun, tinggi badan saya", tinggi_badan, "meter, dan status mahasiswa saya adalah", status_mahasiswa, ".")
