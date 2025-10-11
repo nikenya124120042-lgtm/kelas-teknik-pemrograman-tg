@@ -1,0 +1,23 @@
+1.
+# Program Konversi Suhu dari Celcius ke Fahrenheit
+
+# Meminta input dari pengguna
+celcius = 30
+
+# Rumus konversi 
+fahrenheit = (celcius * 9/5) + 32
+
+# Menampilkan hasil
+print(f"Suhu dalam Fahrenheit adalah: {fahrenheit}°F") 
+
+2.
+# Program cek bilangan ganjil atau genap
+
+# Meminta input dari pengguna 
+angka = 12
+
+# Mengecek apakah bilangan genap atau ganjil
+if angka % 2 == 0:
+    print(f"{angka} adalah bilangan genap.")
+else :
+    print(f"{angka} adalah bilangan ganjil.")
