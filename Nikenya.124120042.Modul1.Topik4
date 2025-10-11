@@ -1,0 +1,40 @@
+1.
+# Program membuat daftar_belanja
+
+# Membuat list daftar_belanja
+daftar_belanja = []
+
+# Meminta pengguna memasukkan 3 barang
+barang1 =  "sunscreen"
+daftar_belanja.append(barang1)
+
+barang2 = "lipstik"
+daftar_belanja.append(barang2)
+
+barang3 = "moisturizer"
+daftar_belanja.append(barang3)
+
+# Menampilkan daftar belanja final
+print("Daftar belanja kamu adalah:", daftar_belanja)
+
+# Menambah belanja baru ke dalam list
+daftar_belanja.append("parfum")
+print(f"update belanja tersedia : {daftar_belanja}")
+
+# Menghapus belanja
+daftar_belanja.remove("sunscreen")
+print(f"Update setelah sunscreen habis:{daftar_belanja} ")
+
+2.
+# Program menyimpan data kontak teman
+
+# Membuat dictionary kontak
+kontak_teman = {
+    "nama" : "Kenny",
+    "no_hp" : "088279801906",
+    "email" : "nikenya.124120042@student.itera.ac.id"
+}
+
+# Menampilkan no_hp teman dengan mengakses kunci 'no_hp'
+print("Nomor HP teman saya adalah:", kontak_teman["no_hp"])
+
