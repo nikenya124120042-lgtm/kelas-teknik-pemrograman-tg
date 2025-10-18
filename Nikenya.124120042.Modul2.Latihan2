@@ -1,0 +1,27 @@
+import math
+
+# Membuat tuple untuk titik A
+A = (3, 8, 15)
+
+# Titik asal(0, 0, 0)
+O = (0, 0, 0)
+
+# Menghitung jarak Euclidean
+jarak = math.sqrt((A[0] - O[0])**2 + (A[1] - O[1])**2 + (A[2] - O[2])**2)
+
+# Menampilkan hasil
+print(f"Koordinat titik A: {A}")
+print(f"Jarak Euclidean dari A ke titik asal: {jarak}")
+
+# Fungsi untuk mencetak tanggal lahir dengan format DD/MM/YYYY
+def cetak_tanggal_lahir(tanggal):
+    hari, bulan, tahun = tanggal
+    print(f"{hari:02d}/{bulan:02d}/{tahun}")
+
+# Membuat tuple berisi data tanggal lahir
+tanggal_lahir = (25, 6, 2005)
+
+# Memanggil fungsi untuk mencetak tanggal lahir
+cetak_tanggal_lahir(tanggal_lahir)
+
+      
