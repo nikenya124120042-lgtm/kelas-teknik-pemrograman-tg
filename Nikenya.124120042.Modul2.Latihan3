@@ -1,0 +1,21 @@
+# Membuat dua set mata kuliah 
+semester_ganjil = {"Lingkungan Hidup Sumatera", "Bahasa Inggris", "PKS 1", "Fisika Dasar", "Matematika Dasar"}
+semester_genap = {"Bahasa Indonesia", "Fisika Dasar", "Matematika Dasar", "Biologi Dasar", "PKS 2"}
+
+# Menampilkan mata kuliah yang hanya ada di semester ganjil
+hanya_ganjil = semester_ganjil - semester_genap
+print("Mata kuliah hanya di semester ganjil:", hanya_ganjil)
+
+# Mencari irisan (mata kuliah yang ada di kedua semester)
+irisan = semester_ganjil & semester_genap
+print("Mata kuliah yang ada di kedua semester:", irisan)
+
+# Membuat list dengan elemen duplikat
+angka_list = [20, 25, 30, 20, 25, 30, 20, 35, 30]
+
+print("List awal:", angka_list)
+
+# Mengubah list menjadi set untuk menghapus duplikasi
+angka_unik = set( angka_list)
+
+print("Set tanpa duplikasi:", angka_unik)
