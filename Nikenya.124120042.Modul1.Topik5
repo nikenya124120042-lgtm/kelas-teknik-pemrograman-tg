@@ -1,0 +1,29 @@
+# Permainan Tebak Angka
+
+# Menentukan angka rahasia
+angka_rahasia = 19
+
+# Memulai permainan
+print("Selamat datang di permainan tebal angka!")
+print("Tebak angka antara 1 sampe 30.")
+
+# Loop sampai pengguna menebak dengan benar
+while True:
+    # Meminta input dari pengguna
+    tebakan = int(input("Masukkan tebakanmu:"))
+    # Mengecek tebakan pengguna
+    if tebakan < angka_rahasia:
+        print("Terlalu kecil! Coba lagi.")
+    elif tebakan > angka_rahasia:
+        print("Terlalu besar! Coba lagi.")
+    else:
+        print("Selamat! Tebakanmu benar")
+        break  # keluar dari loop jika benar
+        
+ # Mencetak bilangan genap dari 1 hingga 20
+
+print("Bilangan genap dari 1 sampai 20:")
+
+for i in range(1, 21):   
+    if i % 2 == 0:        
+        print(i)
