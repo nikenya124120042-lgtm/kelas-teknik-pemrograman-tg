@@ -1,0 +1,63 @@
+1.
+# Membuat list of dictionary berisi data mahasiswa
+mahasiswa_list = [
+    {"nama": "Azura", "nim": "124430112", "jurusan": "Teknik Biomedis"},
+    {"nama": "Zilda", "nim": "124190105", "jurusan": "Teknik Industri"},
+    {"nama": "Kenny", "nim": "124120042", "jurusan": "Teknik Geofisika"},
+    {"nama": "Reyzacky", "nim": "124360042", "jurusan": "Teknik Material"},
+    {"nama": "Verol", "nim": "124120099", "jurusan": "Teknik Geofisika"},
+     {"nama": "Vira", "nim": "124130052", "jurusan": "Teknik Elektro"},
+]
+
+# Menampilkan seluruh data mahasiswa 
+print("Daftar Mahasiswa:")
+for mhs in mahasiswa_list:
+    print(mhs)
+
+# --- Cari mahasiswa berdasarkan NIM ---
+cari_nim = input("\nMasukkan NIM yang ingin dicari: ")
+
+found = False
+for mhs in mahasiswa_list:
+    if mhs["nim"] == cari_nim:
+        print(f"Mahasiswa ditemukan: {mhs}")
+        found = True
+        break
+if not found:
+    print("Mahasiswa dengan NIM tersebut tidak ditemukan.")
+
+# --- Tampilkan semua nama mahasiswa  dari jurusan tertentu ---
+cari_jurusan = input("\nMasukkan jurusan yang ingin ditampilkan: ")
+
+print(f"\nMahasiswa dari jurusan {cari_jurusan}:")
+for mhs in mahasiswa_list:
+    if mhs["jurusan"].lower() == cari_jurusan.lower():
+        print(mhs["nama"])
+
+2.
+# Membuat dictionary of list untuk menyimpan nilai ujian tiap mahasiswa
+nilai_mahasiswa = {
+    "Azura": [50, 15, 20],
+    "Zilda": [45, 54, 68],
+    "Kenny": [43, 90, 76],
+    "Reyzacky": [36, 10, 70],
+    "Verol": [91, 95, 50],
+    "Vira": [58, 24, 88]
+}
+
+# --- Tampilkan nilai tertinggi tiap mahasiswa ---
+print("Nilai tertinggi tiap mahasiswa:")
+for nama, nilai in nilai_mahasiswa.items():
+    print(f"{nama}: {max(nilai)}")
+
+# --- Hitung rata-rata semua nilai dari seluruh mahasiswa ---
+total_nilai = 0
+jumlah_nilai = 0
+
+for nilai in nilai_mahasiswa.values():
+    total_nilai += sum(nilai)
+    jumlah_nilai += len(nilai)
+
+rata_semua = total_nilai / jumlah_nilai
+
+print(f"\nRata-rata semua nilai: {rata_semua:.2f}")
