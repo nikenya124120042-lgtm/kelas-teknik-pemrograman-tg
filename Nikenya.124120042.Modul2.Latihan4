@@ -1,0 +1,35 @@
+# Membuat list berisi dictionary data mahasiswa
+mahasiswa_list = [
+    {"nim": "124120042", "nama": "Kenny", "ipk": 3.42},
+    {"nim": "124120099", "nama": "Verol", "ipk": 3.91},
+    {"nim": "124190105", "nama": "Zilda", "ipk": 3.60}, 
+]
+# Menampilkan semua data mahasiswa
+print("Data Mahasiswa:")
+for mhs in mahasiswa_list:
+    print(mhs)
+
+# Mencari mahasiswa dengan IPK tertinggi
+mahasiswa_terbaik = max(mahasiswa_list, key=lambda x: x["ipk"])
+
+print("\nMahasiswa dengan IPK tertinggi:")
+print(mahasiswa_terbaik)
+
+# Membuat dictionary nilai ujian mahasiswa
+nilai_mahasiswa = {
+    "Daffa": [75, 40, 50],
+    "Raffi": [20, 13, 18],
+    "Kenny": [88, 76, 92]
+}
+
+# Menampilkan data awal
+print("Data Nilai Mahasiswa")
+for nama, nilai in nilai_mahasiswa.items():
+    print(f"{nama}: {nilai}")
+
+# Menghitung rata-rata tiap mahasiswa
+print("\nRata-rata Nilai Tiap Mahasiswa:")
+for nama, nilai in nilai_mahasiswa.items():
+    rata = sum(nilai) / len(nilai)
+    print(f"{nama:} {rata:.2f}")
+    
