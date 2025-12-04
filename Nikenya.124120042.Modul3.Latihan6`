@@ -1,0 +1,75 @@
+import random
+
+# ============================================================
+# KELAS DASAR
+# ============================================================
+class Sensor:
+    def __init__(self, id_sensor, lokasi):
+        self.id = id_sensor
+        self.lokasi = lokasi
+        self.status = "OFF"
+        self.data = []
+
+    def aktifkan_sensor(self):
+        self.status = "ON"
+
+    def nonaktifkan_sensor(self):
+        self.status = "OFF"
+
+    def rekam_data(self):
+        if self.status == "ON":
+            nilai = random.uniform(0.0, 100.0)   # pembacaan acak
+            self.data.append(nilai)
+        else:
+            print(f"Sensor {self.id} tidak aktif!")
+
+    def rata_rata(self):
+        if len(self.data) == 0:
+            return 0
+        return sum(self.data) / len(self.data)
+
+
+# ============================================================
+# KELAS TURUNAN
+# ============================================================
+class SensorSeismik(Sensor):
+    def __init__(self, id_sensor, lokasi, kedalaman):
+        super().__init__(id_sensor, lokasi)
+        self.kedalaman = kedalaman  # atribut tambahan
+
+
+class SensorGravitasi(Sensor):
+    def __init__(self, id_sensor, lokasi, resolusi):
+        super().__init__(id_sensor, lokasi)
+        self.resolusi = resolusi  # atribut tambahan
+
+
+# ============================================================
+# PROGRAM UTAMA
+# ============================================================
+
+# Membuat daftar sensor
+daftar_sensor = [
+    SensorSeismik("S1", "Site-A", kedalaman=59),
+    SensorGravitasi("G1", "Site-B", resolusi=8.01),
+    SensorSeismik("S2", "Site-C", kedalaman=360),
+]
+
+# Aktifkan semua sensor dan rekam data beberapa kali
+for sensor in daftar_sensor:
+    sensor.aktifkan_sensor()
+    for _ in range(5):   # rekam 5 kali data
+        sensor.rekam_data()
+
+# ============================================================
+# LAPORAN TABEL
+# ============================================================
+
+print("\n=== LAPORAN SENSOR GEOFSIKA ===")
+print("ID\tLokasi\tStatus\tJumlahData\tRata-rata")
+
+for sensor in daftar_sensor:
+    print(
+        f"{sensor.id}\t{sensor.lokasi}\t{sensor.status}\t"
+        f"{len(sensor.data)}\t\t{sensor.rata_rata():.2f}"
+    ) 
