@@ -1,0 +1,46 @@
+from collections import Counter
+
+# -------------------------
+# DATA CONTOH (ganti dengan data asli kamu)
+# -------------------------
+survey_data = [
+    {"trace_id": 1, "QC_flag": "GOOD", "receiver": "R1", "survey": "S1"},
+    {"trace_id": 2, "QC_flag": "BAD",  "receiver": "R2", "survey": "S1"},
+    {"trace_id": 3, "QC_flag": "GOOD", "receiver": "R1", "survey": "S2"},
+    {"trace_id": 4, "QC_flag": "BAD",  "receiver": "R3", "survey": "S2"},
+]
+
+# -----------------------------------
+# 1. Semua trace_id dengan QC_flag = BAD
+# -----------------------------------
+bad_traces = [d["trace_id"] for d in survey_data if d["QC_flag"] == "BAD"]
+
+# -----------------------------------
+# 2. Total trace dari seluruh survey
+# -----------------------------------
+total_trace = len(survey_data)
+
+# -----------------------------------
+# 3. Survey dengan jumlah trace terbanyak
+# -----------------------------------
+survey_count = Counter([d["survey"] for d in survey_data])
+survey_terbanyak = survey_count.most_common(1)[0]   # (nama_survey, jumlah)
+
+# -----------------------------------
+# 4. Set semua receiver unik
+# -----------------------------------
+unique_receivers = {d["receiver"] for d in survey_data}
+
+# -----------------------------------
+# 5. Dictionary {receiver: jumlah_trace}
+# -----------------------------------
+receiver_freq = dict(Counter([d["receiver"] for d in survey_data]))
+
+# -----------------------------------
+# OUTPUT
+# -----------------------------------
+print("Trace dengan QC BAD :", bad_traces)
+print("Total trace         :", total_trace)
+print("Survey terbanyak    :", survey_terbanyak)
+print("Receiver unik       :", unique_receivers)
+print("Frekuensi receiver  :", receiver_freq)
