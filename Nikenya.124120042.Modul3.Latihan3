@@ -1,0 +1,44 @@
+
+# ======================================
+
+class AlatGeofisika:
+    def __init__(self, nama, tipe):
+        self.nama = nama
+        self.tipe = tipe
+
+    def info(self):
+        print(f"Alat Geofisika: {self.nama} | Tipe: {self.tipe}")
+
+# ======================================
+
+class Magnetometer(AlatGeofisika):
+    def __init__(self, nama, tipe, sensitivitas):
+        super().__init__(nama, tipe)
+        self.sensitivitas = sensitivitas
+
+    def info(self):
+        print(f"Magnetometer: {self.nama} | Tipe: {self.tipe} | Sensitivitas: {self.sensitivitas} nT")
+
+class Gravimeter(AlatGeofisika):
+    def __init__(self, nama, tipe, ketelitian):
+        super().__init__(nama, tipe)
+        self.ketelitian = ketelitian
+
+    def info(self):
+        print(f"Gravimeter: {self.nama} | Tipe: {self.tipe} | Ketelitian: {self.ketelitian} mGal")
+# ======================================
+
+m1 = Magnetometer("Geometrics G-856", "Proton", 0.1)
+g1 = Gravimeter("Scintrex CG-5", "Absolute", 0.001)
+
+# Panggil method info()
+m1.info()
+g1.info()
+# ======================================
+
+list_alat = ["CG5", "G856", "G856", "MagMapper", "CG5"]
+
+set_alat = set(list_alat)
+
+print("\nList asli :", list_alat)
+print("Set tanpa duplikasi:", set_alat)
