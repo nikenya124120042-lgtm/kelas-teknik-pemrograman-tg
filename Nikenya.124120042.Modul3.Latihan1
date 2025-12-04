@@ -1,0 +1,23 @@
+class Mahasiswa:
+    def __init__(self, nama, nim, prodi):
+        self.nama = nama
+        self.nim = nim
+        self.prodi = prodi
+
+    def tampilkan_data(self):
+        print("=== Data Mahasiswa ===")
+        print(f"Nama  : {self.nama}")
+        print(f"NIM   : {self.nim}")
+        print(f"Prodi : {self.prodi}")
+        print("-----------------------")
+
+
+# Membuat beberapa objek
+m1 = Mahasiswa("Kenny", "124120042", "Teknik Geofisika")
+m2 = Mahasiswa("Raffi", "124170024", "Teknik Mesin")
+m3 = Mahasiswa("Azura", "124430112", "Teknik Biomedis")
+
+# Tampilkan data semua objek
+m1.tampilkan_data()
+m2.tampilkan_data()
+m3.tampilkan_data()
