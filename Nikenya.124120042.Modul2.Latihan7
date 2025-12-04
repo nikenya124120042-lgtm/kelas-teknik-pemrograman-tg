@@ -1,0 +1,97 @@
+# Versi robust — menangani kasus kosong / field hilang / multi-maximum
+def cari_amplitudo_maks(sensor_data):
+    """
+    Mengembalikan dict {sensor: amplitudo_maks} atau None jika tidak ada data valid.
+    """
+    hasil = {}
+    for sensor, records in sensor_data.items():
+        # filter record yang punya 'ampl' numeric
+        valid = [r for r in records if isinstance(r.get("ampl"), (int, float))]
+        if not valid:
+            hasil[sensor] = None
+        else:
+            max_ampl = max(r["ampl"] for r in valid)
+            hasil[sensor] = max_ampl
+    return hasil
+
+
+def cari_waktu_amplitudo_maks(sensor_data):
+    """
+    Mengembalikan dict {sensor: waktu_terjadinya_amplitudo_maks} atau None jika tidak ada data valid.
+    Jika ada lebih dari satu record dengan amplitudo maksimum yang sama, pilih waktu paling awal.
+    """
+    hasil = {}
+    for sensor, records in sensor_data.items():
+        # filter record yang punya 'ampl' numeric dan punya 'time' (time juga harus numeric/comparable)
+        valid = [r for r in records
+                 if isinstance(r.get("ampl"), (int, float)) and "time" in r]
+        if not valid:
+            hasil[sensor] = None
+            continue
+
+        # cari amplitudo maksimum
+        max_ampl = max(r["ampl"] for r in valid)
+        # ambil semua kandidat yang punya ampl == max_ampl
+        candidates = [r for r in valid if r["ampl"] == max_ampl]
+
+        # dari kandidat, pilih waktu paling awal (min)
+        try:
+            waktu_terawal = min(r["time"] for r in candidates)
+        except TypeError:
+            # jika time tidak bisa dibandingkan (mis. string campur int), fallback ambil first candidate
+            waktu_terawal = candidates[0]["time"]
+
+        hasil[sensor] = waktu_terawal
+    return hasil
+
+
+def buat_laporan(sensor_data):
+    """
+    Menghasilkan list of dict:
+    [
+      {"sensor": sensor_name, "amplitudo_maks": ..., "waktu_kejadian": ...},
+      ...
+    ]
+    """
+    ampl_maks = cari_amplitudo_maks(sensor_data)
+    waktu_maks = cari_waktu_amplitudo_maks(sensor_data)
+
+    laporan = []
+    for sensor in sensor_data.keys():
+        laporan.append({
+            "sensor": sensor,
+            "amplitudo_maks": ampl_maks.get(sensor),
+            "waktu_kejadian": waktu_maks.get(sensor)
+        })
+    return laporan
+
+
+# -----------------------
+# Contoh pemanggilan / test
+# -----------------------
+if __name__ == "__main__":
+    sensor_data = {
+        "S1": [
+            {"time": 0.0, "ampl": 1.2},
+            {"time": 1.0, "ampl": 2.5},
+            {"time": 2.0, "ampl": 1.8},
+        ],
+        "S2": [
+            {"time": 0.0, "ampl": 0.9},
+            {"time": 1.0, "ampl": 3.4},
+            {"time": 2.0, "ampl": 3.4},   # sama dengan maksimum, waktu lebih besar
+        ],
+        "S3": [],  # kosong -> None
+        "S4": [
+            {"time": "2025-12-01T10:00:00", "ampl": 5.0},  # time bisa string
+            {"time": "2025-12-01T09:00:00", "ampl": 5.0},  # dua max, pilih waktu paling awal (min string)
+        ],
+        "S5": [
+            {"time": 0, "ampl": None},   # ampl tidak valid -> diabaikan
+            {"time": 1, "ampl": "a"},    # ampl tidak numeric -> diabaikan
+        ]
+    }
+
+    laporan_akhir = buat_laporan(sensor_data)
+    from pprint import pprint
+    pprint(laporan_akhir)
