@@ -1,0 +1,32 @@
+class Sensor:
+    def __init__(self, nilai_awal):
+        self.__nilai_sinyal = nilai_awal   # atribut private
+
+    # Method membaca nilai sinyal
+    def baca_sinyal(self):
+        return self.__nilai_sinyal
+
+    # Method memperbarui nilai sinyal (dengan validasi)
+    def update_sinyal(self, nilai_baru):
+        if isinstance(nilai_baru, (int, float)):
+            self.__nilai_sinyal = nilai_baru
+            print(f"Nilai sinyal berhasil diperbarui menjadi: {nilai_baru}")
+        else:
+            print("Error: nilai sinyal harus berupa angka.")
+
+# =============================
+
+sensor1 = Sensor(50)
+
+print("Nilai awal sinyal:", sensor1.baca_sinyal())
+
+# 1. Update NILAI melalui METHOD → BERHASIL
+sensor1.update_sinyal(90)
+print("Nilai setelah update via method:", sensor1.baca_sinyal())
+
+# 2. Coba update NILAI langsung 
+sensor1.__nilai_sinyal = 999   # Python membuat atribut baru, bukan mengubah yang private
+
+print("\nPercobaan mengubah langsung:")
+print("Nilai sinyal setelah akses langsung:", sensor1.baca_sinyal())
+print("Nilai '__nilai_sinyal' langsung:", sensor1.__nilai_sinyal)
