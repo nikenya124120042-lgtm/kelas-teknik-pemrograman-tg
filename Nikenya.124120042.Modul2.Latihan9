@@ -1,0 +1,109 @@
+# ==================================================
+# 1. QC DATA SEISMIK
+# ==================================================
+def qc_seismik(data, ambang_offset):
+    laporan = {}
+
+    for survey, content in data.items():
+        seismik = content["seismik"]
+
+        total_ok = 0
+        total_bad = 0
+
+        for t in seismik:
+            # QC_flag awal None → belum QC, sekarang diproses
+            if t["offset"] > ambang_offset:
+                t["QC_flag"] = "BAD"
+                total_bad += 1
+            else:
+                t["QC_flag"] = "OK"
+                total_ok += 1
+
+        laporan[survey] = {
+            "total_OK": total_ok,
+            "total_BAD": total_bad
+        }
+
+    return laporan
+
+
+# ==================================================
+# 2. STATISTIK GRAVITASI
+# ==================================================
+def statistik_gravitasi(data):
+    rata_per_survey = {}
+    semua_nilai = []
+
+    for survey, content in data.items():
+        grav = content["gravitasi"]
+
+        # hindari error jika data kosong
+        if len(grav) > 0:
+            rata = sum(grav) / len(grav)
+        else:
+            rata = None
+
+        rata_per_survey[survey] = rata
+
+        semua_nilai.extend(grav)
+
+    gravitasi_min = min(semua_nilai)
+    gravitasi_max = max(semua_nilai)
+
+    return {
+        "rata_per_survey": rata_per_survey,
+        "gravitasi_min": gravitasi_min,
+        "gravitasi_max": gravitasi_max
+    }
+
+
+# ==================================================
+# 3. ANALISIS MAGNETIK
+# ==================================================
+def analisis_magnetik(data):
+    semua_magnetik = []
+
+    for survey, content in data.items():
+        semua_magnetik.extend(content["magnetik"])
+
+    nilai_unik = sorted(set(semua_magnetik))
+
+    return {
+        "list_semua": semua_magnetik,
+        "nilai_unik_urut": nilai_unik
+    }
+# ==================================================
+data = {
+    "Survey_A": {
+        "seismik": [
+            {"trace_id": 1, "offset": 10, "QC_flag": "OK"},
+            {"trace_id": 2, "offset": 400, "QC_flag": "BAD"},
+            {"trace_id": 3, "offset": 950,  "QC_flag":"BAD"},
+        ],
+        "gravitasi": [9.81, 10.11, 9.82, 11.79],
+        "magnetik": [60, 92, 21, 60]
+    },
+
+    "Survey_B": {
+        "seismik": [
+            {"trace_id": 10, "offset": 200, "QC_flag": None},
+            {"trace_id": 11, "offset": 500, "QC_flag": None},
+        ],
+        "gravitasi": [8.70, 6.74, 5.76],
+        "magnetik": [40, 17, 28]
+    }
+}
+
+# ==================================================
+qc_report = qc_seismik(data, ambang_offset=250)
+grav_report = statistik_gravitasi(data)
+mag_report = analisis_magnetik(data)
+
+print("=== QC SEISMIK ===")
+print(qc_report)
+
+print("\n=== STATISTIK GRAVITASI ===")
+print(grav_report)
+
+print("\n=== ANALISIS MAGNETIK ===")
+print(mag_report)
