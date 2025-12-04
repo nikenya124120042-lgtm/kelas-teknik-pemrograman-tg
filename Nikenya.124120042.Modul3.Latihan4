@@ -1,0 +1,29 @@
+class Sensor:
+    def __init__(self, nama):
+        self.nama = nama
+
+    def baca_data(self):
+        return f"{self.nama}: Membaca data umum dari sensor."
+
+
+class SensorSeismik(Sensor):
+    def baca_data(self):
+        return f"{self.nama}: Membaca data getaran tanah (seismik)."
+
+
+class SensorMagnetik(Sensor):
+    def baca_data(self):
+        return f"{self.nama}: Membaca intensitas medan magnet."
+
+
+# Membuat objek dari masing-masing sensor
+s1 = Sensor("Sensor-Umum")
+s2 = SensorSeismik("Sensor-Seismik")
+s3 = SensorMagnetik("Sensor-Magnetik")
+
+# Masukkan semua ke dalam list
+daftar_sensor = [s1, s2, s3]
+
+# Loop panggil baca_data()
+for sensor in daftar_sensor:
+    print(sensor.baca_data())
