@@ -1,0 +1,68 @@
+import random
+import time
+
+class Sensor:
+    def __init__(self, nama):
+        self.nama = nama
+        self.data = []  # daftar amplitudo
+
+    def tambah_data(self, nilai):
+        self.data.append(nilai)
+
+    def rata_rata(self):
+        if len(self.data) == 0:
+            return 0
+        return sum(self.data) / len(self.data)
+
+    def info(self):
+        return f"Sensor: {self.nama}"
+
+
+class SensorSeismik(Sensor):
+    def baca_data(self):
+        # simulasi amplitudo gempa
+        return random.uniform(0.1, 5.0)
+
+
+class SensorMagnetik(Sensor):
+    def baca_data(self):
+        # simulasi variasi medan magnet
+        return random.uniform(20, 80)
+# 
+seismik = SensorSeismik("Sensor Seismik A")
+magnetik = SensorMagnetik("Sensor Magnetik B")
+
+# 
+
+seismik.tambah_data(4.2)
+seismik.tambah_data(0.5)
+seismik.tambah_data(1.8)
+
+magnetik.tambah_data(90)
+magnetik.tambah_data(25)
+magnetik.tambah_data(10)
+
+# 
+
+print("Rata-rata amplitudo Sensor Seismik :", seismik.rata_rata())
+print("Rata-rata amplitudo Sensor Magnetik:", magnetik.rata_rata())
+
+# 
+
+print("\nSimulasi pembacaan otomatis...")
+
+for i in range(10):
+    data_s = seismik.baca_data()
+    seismik.tambah_data(data_s)
+
+    data_m = magnetik.baca_data()
+    magnetik.tambah_data(data_m)
+
+    print(f"Pembacaan {i+1}: Seismik={data_s:.2f}, Magnetik={data_m:.2f}")
+
+    time.sleep(0.2)  # hanya untuk simulasi (boleh dihapus)
+
+# Rata-rata setelah simulasi
+print("\nRata-rata baru setelah simulasi:")
+print("Seismik :", seismik.rata_rata())
+print("Magnetik:", magnetik.rata_rata())
