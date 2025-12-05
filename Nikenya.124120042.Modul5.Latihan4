@@ -1,0 +1,37 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# -----------------------------
+# 1. Membuat DataFrame
+# -----------------------------
+data = {
+    'X': [0, 0, 50, 50, 100, 100],
+    'Y': [0, 50, 0, 50, 0, 50],
+    'Total_Field': [43210, 43280, 43100, 43420, 43050, 43500]
+}
+
+df = pd.DataFrame(data)
+
+# -----------------------------
+# 2. Membuat grid menggunakan pivot_table
+# -----------------------------
+grid = df.pivot_table(values='Total_Field', index='Y', columns='X')
+
+# Mengambil grid X, Y, dan nilai Z
+X = grid.columns.values
+Y = grid.index.values
+Z = grid.values
+
+# -----------------------------
+# 3. Plot Contour
+# -----------------------------
+plt.figure(figsize=(8,6))
+cp = plt.contourf(X, Y, Z, levels=20)   # contour warna
+plt.colorbar(cp, label='Total Field (nT)')
+plt.contour(X, Y, Z, colors='black', linewidths=0.7)  # garis contour
+
+plt.xlabel('X (m)')
+plt.ylabel('Y (m)')
+plt.title('Peta Kontur Anomali Magnetik')
+
+plt.show()
