@@ -1,0 +1,69 @@
+import sqlite3
+import pandas as pd
+
+# 1. Buat koneksi ke database SQLite sementara (in-memory)
+conn = sqlite3.connect(':memory:')
+cursor = conn.cursor()
+
+# 2. Buat tabel survey jika belum ada
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS survey (
+    id_survey INTEGER PRIMARY KEY NOT NULL,
+    nama_survey TEXT NOT NULL,
+    lokasi TEXT,
+    tanggal TEXT,
+    metode TEXT
+);
+""")
+
+# 3. Buat tabel Data_Seismik jika belum ada
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Data_Seismik (
+    id_data INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_survey INTEGER,
+    titik_x REAL,
+    titik_y REAL,
+    amplitudo REAL,
+    waktu_tiba REAL,
+    FOREIGN KEY (id_survey) REFERENCES survey(id_survey)
+);
+""")
+
+# 4. Tambahkan satu data baru ke tabel survey
+cursor.execute("""
+INSERT INTO survey (nama_survey, lokasi, tanggal, metode)
+VALUES ('Survei Geolistrik C', 'Metro', '2025-05-15', 'Resistivitas');
+""")
+
+# 5. Tambahkan beberapa data titik seismik ke tabel Data_Seismik
+data_seismik = [
+    (1, 15.7, 25.4, 0.68, 0.20),
+    (1, 16.3, 26.1, 0.73, 0.25),
+    (1, 17.0, 27.5, 0.70, 0.22)
+]
+
+cursor.executemany("""
+INSERT INTO Data_Seismik (id_survey, titik_x, titik_y, amplitudo, waktu_tiba)
+VALUES (?, ?, ?, ?, ?);
+""", data_seismik)
+
+# 6. Simpan perubahan ke database
+conn.commit()
+
+# 7. Ambil data survey (hanya nama_survey dan lokasi) menggunakan Pandas
+df_survey = pd.read_sql_query("SELECT nama_survey, lokasi FROM survey;", conn)
+print("Tabel survey (nama_survey dan lokasi):")
+print(df_survey)
+
+# 8. Ambil semua data seismik beserta info survey (JOIN)
+query_join = """
+SELECT s.nama_survey, s.lokasi, d.titik_x, d.titik_y, d.amplitudo, d.waktu_tiba
+FROM Data_Seismik d
+JOIN survey s ON d.id_survey = s.id_survey;
+"""
+df_seismik = pd.read_sql_query(query_join, conn)
+print("\nData gabungan Data_Seismik dan survey:")
+print(df_seismik)
+
+# 9. Tutup koneksi
+conn.close()
