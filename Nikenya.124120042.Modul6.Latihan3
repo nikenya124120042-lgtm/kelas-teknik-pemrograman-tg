@@ -1,0 +1,16 @@
+import sqlite3
+import pandas as pd
+
+# 1. Koneksi ke database geofisika.db
+conn = sqlite3.connect("geofisika.db")
+
+# 2. Eksekusi query SELECT untuk lokasi 'Bandar Lampung' dan simpan ke DataFrame
+df_bandar_lampung = pd.read_sql_query(
+    "SELECT * FROM survey WHERE lokasi = 'Bandar Lampung'", conn
+)
+
+# 3. Tampilkan hasil
+print(df_bandar_lampung)
+
+# 4. Tutup koneksi
+conn.close()
