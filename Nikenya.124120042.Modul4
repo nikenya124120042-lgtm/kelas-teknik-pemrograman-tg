@@ -1,0 +1,237 @@
+# analisis_seismik.py
+"""
+Skrip analisis data mikroseismik.
+
+Fungsi:
+ - Membaca data dari CSV (default: data_mikroseismik.csv)
+ - Inspeksi awal (.info(), .describe(), head)
+ - Cleaning: buang magnitudo <= 0, tangani NaN
+ - Konversi waktu ke datetime
+ - Buat kolom Jarak_Horizontal_m = sqrt(X_m**2 + Y_m**2)
+ - Analisis: magnitudo max/min, kedalaman rata-rata, kategori kedalaman,
+   hitung kejadian dalam radius < 500 m
+ - Tulis laporan ke file laporan_analisis.txt
+
+Cara pakai:
+    python analisis_seismik.py --input data_mikroseismik.csv
+
+Catatan:
+ - Skrip ini menulis laporan_analisis.txt dan data_mikroseismik_processed.csv di folder kerja.
+ - Jika nama kolom berbeda pada file Anda, sesuaikan variabel di bagian CONFIG.
+"""
+
+import argparse
+from pathlib import Path
+import sys
+import numpy as np
+import pandas as pd
+
+# -----------------------------
+# CONFIG: sesuaikan bila perlu
+# -----------------------------
+COL_WAKTU = "Waktu_UTC"    # kolom waktu (string)
+COL_MAG = "Magnitudo"      # kolom magnitudo
+COL_X = "X_m"              # koordinat X dalam meter
+COL_Y = "Y_m"              # koordinat Y dalam meter
+COL_Z = "Z_m"              # kedalaman (negatif ke bawah atau numeric)
+OUT_REPORT = "laporan_analisis.txt"
+OUT_PROCESSED = "data_mikroseismik_processed.csv"
+
+# -----------------------------
+# Fungsi
+# -----------------------------
+
+def read_and_inspect(path: Path) -> pd.DataFrame:
+    print(f"Membaca file: {path}")
+    df = pd.read_csv(path)
+    print(" 5 baris pertama ")
+    print(df.head().to_string(index=False))
+
+    print("Info DataFrame")
+    df.info()
+
+    print("Statistik deskriptif (numeric)")
+    print(df.describe(include=["number"]).to_string())
+
+    return df
+
+
+def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+    # Pastikan kolom penting ada
+    required = [COL_WAKTU, COL_MAG, COL_X, COL_Y, COL_Z]
+    missing = [c for c in required if c not in df.columns]
+    if missing:
+        raise KeyError(f"Kolom required tidak ditemukan di file: {missing}")
+
+    # Konversi Waktu -> datetime (coerce)
+    df = df.copy()
+    df[COL_WAKTU] = pd.to_datetime(df[COL_WAKTU], errors='coerce', utc=True)
+
+    # Drop baris dengan waktu tidak valid
+    before = len(df)
+    df = df.dropna(subset=[COL_WAKTU])
+    after = len(df)
+    print(f"Dropped {before-after} baris karena Waktu_UTC tidak valid atau tidak bisa diparse.")
+
+    # Pastikan kolom numeric benar
+    for c in [COL_MAG, COL_X, COL_Y, COL_Z]:
+        df[c] = pd.to_numeric(df[c], errors='coerce')
+
+    # Hapus magnitudo <= 0
+    before = len(df)
+    df = df[df[COL_MAG] > 0]
+    after = len(df)
+    print(f"Filtered {before-after} baris dengan Magnitudo <= 0 (sensorn error).")
+
+    # Hapus baris yang memiliki NaN pada kolom penting
+    before = len(df)
+    df = df.dropna(subset=[COL_MAG, COL_X, COL_Y, COL_Z])
+    after = len(df)
+    print(f"Dropped {before-after} baris karena NaN pada kolom penting (Magnitudo/X/Y/Z).")
+
+    df = df.reset_index(drop=True)
+    return df
+
+
+def feature_engineer(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df["Jarak_Horizontal_m"] = np.sqrt(df[COL_X].to_numpy(dtype=float) ** 2 + df[COL_Y].to_numpy(dtype=float) ** 2)
+    return df
+
+
+def analyze(df: pd.DataFrame) -> dict:
+    results = {}
+    n_total = len(df)
+    results['n_total'] = int(n_total)
+
+    if n_total == 0:
+        # Tidak ada data valid setelah cleaning
+        results.update({
+            'row_max': None,
+            'row_min': None,
+            'mean_depth': None,
+            'n_shallow': 0,
+            'n_deep': 0,
+            'n_within_500': 0,
+        })
+        return results
+
+    # Magnitudo max dan min
+    idx_max = df[COL_MAG].idxmax()
+    idx_min = df[COL_MAG].idxmin()
+    row_max = df.loc[idx_max]
+    row_min = df.loc[idx_min]
+
+    # Kedalaman rata-rata
+    mean_depth = df[COL_Z].mean()
+
+    # Kategori kedalaman
+    shallow_mask = df[COL_Z] > -1600  # dangkal: Z > -1600
+    deep_mask = ~shallow_mask          # dalam: Z <= -1600
+    n_shallow = int(shallow_mask.sum())
+    n_deep = int(deep_mask.sum())
+
+    # Radius < 500 m
+    n_within_500 = int((df["Jarak_Horizontal_m"] < 500).sum())
+
+    results.update({
+        'row_max': row_max,
+        'row_min': row_min,
+        'mean_depth': float(mean_depth),
+        'n_shallow': n_shallow,
+        'n_deep': n_deep,
+        'n_within_500': n_within_500,
+    })
+    return results
+
+
+def write_report(results: dict, out_path: Path):
+    with out_path.open('w', encoding='utf-8') as f:
+        f.write('LAPORAN ANALISIS MIKROSEISMIK')
+        f.write
+        f.write(f"Jumlah total kejadian valid : {results.get('n_total',0)}")
+
+        if results.get('row_max') is None:
+            f.write('Tidak ada data valid untuk dianalisis setelah pembersihan')
+            return
+
+        row_max = results['row_max']
+        row_min = results['row_min']
+
+        f.write('Gempa dengan magnitudo TERBESAR')
+        f.write(f"  Waktu (UTC)    : {row_max[COL_WAKTU].isoformat()}")
+        f.write(f"  Koordinat (X,Y,Z) : ({row_max[COL_X]:.2f} m, {row_max[COL_Y]:.2f} m, {row_max[COL_Z]:.2f} m)")
+        f.write(f"  Magnitudo      : {row_max[COL_MAG]:.2f}")
+        f.write(f"  Jarak horiz.   : {row_max['Jarak_Horizontal_m']:.2f} m")
+
+        f.write('Gempa dengan magnitudo TERKECIL:')
+        f.write(f"  Waktu (UTC)    : {row_min[COL_WAKTU].isoformat()}")
+        f.write(f"  Koordinat (X,Y,Z) : ({row_min[COL_X]:.2f} m, {row_min[COL_Y]:.2f} m, {row_min[COL_Z]:.2f} m)")
+        f.write(f"  Magnitudo      : {row_min[COL_MAG]:.2f}")
+        f.write(f"  Jarak horiz.   : {row_min['Jarak_Horizontal_m']:.2f} m")
+
+        f.write(f"Kedalaman rata-rata (Z_m) : {results['mean_depth']:.2f} m")
+        f.write(f"Jumlah gempa dangkal (Z > -1600 m) : {results['n_shallow']}")
+        f.write(f"Jumlah gempa dalam (Z <= -1600 m) : {results['n_deep']}")
+        f.write(f"Jumlah kejadian dalam radius < 500 m : {results['n_within_500']}")
+
+        f.write('Catatan: kedalaman diasumsikan kolom Z_m (negatif ke bawah apabila format Anda seperti itu).')
+
+    print(f"Laporan tertulis ke: {out_path}")
+
+
+# -----------------------------
+# Main
+# -----------------------------
+
+def main():
+    parser = argparse.ArgumentParser(description='Analisis data mikroseismik')
+    parser.add_argument('--input', '-i', type=str, default='data_mikroseismik.csv', help='Path ke file data_mikroseismik.csv')
+    parser.add_argument('--report', '-r', type=str, default=OUT_REPORT, help='Nama file output laporan teks')
+    parser.add_argument('--outcsv', type=str, default=OUT_PROCESSED, help='Nama file CSV hasil proses')
+    args = parser.parse_args()
+
+    input_path = Path(args.input)
+    report_path = Path(args.report)
+    processed_path = Path(args.outcsv)
+
+    if not input_path.exists():
+        print(f"Error: file tidak ditemukan: {input_path}")
+        sys.exit(1)
+
+    # Read & inspect
+    try:
+        df = read_and_inspect(input_path)
+    except Exception as e:
+        print(f"Gagal membaca/men-inspect file: {e}")
+        sys.exit(1)
+
+    # Clean
+    try:
+        df_clean = clean_data(df)
+    except KeyError as ke:
+        print(str(ke))
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error saat cleaning data: {e}")
+        sys.exit(1)
+
+    # Feature engineering
+    df_feat = feature_engineer(df_clean)
+
+    # Analyze
+    results = analyze(df_feat)
+
+    # Write report
+    write_report(results, report_path)
+
+    # Simpan versi yang sudah diproses
+    try:
+        df_feat.to_csv(processed_path, index=False)
+        print(f"Data yang sudah dibersihkan dan ditambahkan kolom disimpan ke: {processed_path}")
+    except Exception as e:
+        print(f"Gagal menyimpan file processed CSV: {e}")
+
+
+if __name__ == '__main__':
+    main()
