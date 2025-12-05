@@ -1,0 +1,17 @@
+
+import matplotlib.pyplot as plt
+
+# Data
+litologi = ['Pasir', 'Lempung', 'Batugamping', 'Gambut']
+jumlah = [35, 50, 20, 10]
+
+# Plot
+plt.bar(litologi, jumlah)
+
+# Label
+plt.xlabel('Tipe Litologi')
+plt.ylabel('Jumlah (frekuensi)')
+plt.title('Frekuensi Tipe Litologi di Area Survei')
+
+# Tampilkan grafik
+plt.show()
