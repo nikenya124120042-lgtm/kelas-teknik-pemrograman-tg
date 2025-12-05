@@ -1,0 +1,61 @@
+import sqlite3
+
+# Membuat koneksi ke database SQLite sementara (in-memory)
+conn = sqlite3.connect(':memory:')
+cursor = conn.cursor()
+
+# Membuat tabel survey jika belum ada
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS survey (
+    id_survey INTEGER PRIMARY KEY NOT NULL,
+    nama_survey TEXT NOT NULL,
+    lokasi TEXT,
+    tanggal TEXT,
+    metode TEXT
+);
+""")
+
+# Membuat tabel Data_Seismik jika belum ada
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Data_Seismik (
+    id_data INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_survey INTEGER,
+    titik_x REAL,
+    titik_y REAL,
+    amplitudo REAL,
+    waktu_tiba REAL,
+    FOREIGN KEY (id_survey) REFERENCES survey(id_survey)
+);
+""")
+
+# Memasukkan data ke tabel survey (hanya jika belum ada)
+cursor.execute("""
+INSERT OR IGNORE INTO survey (id_survey, nama_survey, lokasi, tanggal, metode)
+VALUES (1, 'Survei Geolistrik C', 'Metro', '2025-05-15', 'Resistivitas');
+""")
+
+# Menambahkan beberapa data titik seismik dengan angka berbeda
+cursor.execute("""
+INSERT INTO Data_Seismik (id_survey, titik_x, titik_y, amplitudo, waktu_tiba)
+VALUES (2, 15.7, 85.4, 0.68, 7.20);
+""")
+
+cursor.execute("""
+INSERT INTO Data_Seismik (id_survey, titik_x, titik_y, amplitudo, waktu_tiba)
+VALUES (18, 19.3, 46.1, 8.3, 0.25);
+""")
+
+# Simpan perubahan ke database
+conn.commit()
+
+print("Data berhasil ditambahkan ke tabel Data_Seismik.")
+
+# Cek isi tabel Data_Seismik setelah insert
+print("\nIsi tabel Data_Seismik saat ini:")
+cursor.execute("SELECT * FROM Data_Seismik;")
+rows = cursor.fetchall()
+for row in rows:
+    print(row)
+
+# Tutup koneksi database
+conn.close()
